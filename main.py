@@ -10,6 +10,21 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import tkinter.font as tkfont
 
+# macOS: System Python (3.9.6) includes obsolete Tk 8.5 which renders a blank window on modern macOS.
+# Automatically upgrade process to modern Homebrew Python (Tk 8.6+/9.0+) if available.
+if sys.platform == "darwin":
+    try:
+        import tkinter as _tk
+        if _tk.TkVersion < 8.6:
+            for _candidate in ["/opt/homebrew/bin/python3", "/usr/local/bin/python3"]:
+                if os.path.exists(_candidate) and sys.executable != _candidate:
+                    _args = sys.argv.copy()
+                    if not _args or _args[0] in ("-c", ""):
+                        _args = [__file__] + _args[1:]
+                    os.execv(_candidate, [_candidate] + _args)
+    except Exception:
+        pass
+
 # Silence macOS Tk deprecation notice
 os.environ["TK_SILENCE_DEPRECATION"] = "1"
 
